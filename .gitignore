@@ -1,0 +1,15 @@
+# binary
+taskcli
+
+# env
+.env
+.env.*
+
+# OS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+.claude
