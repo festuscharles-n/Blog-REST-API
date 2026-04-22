@@ -26,7 +26,7 @@ type UpdateBody struct {
 }
 
 type PostIDInput struct {
-	ID uint `path:"id" doc:"Post ID"`
+	ID string `path:"id" doc:"Post UUID"`
 }
 
 type CreatePostInput struct {
@@ -34,7 +34,7 @@ type CreatePostInput struct {
 }
 
 type UpdatePostInput struct {
-	ID   uint `path:"id" doc:"Post ID"`
+	ID   string `path:"id" doc:"Post UUID"`
 	Body UpdateBody
 }
 
@@ -69,8 +69,8 @@ func GetPosts(_ context.Context, _ *struct{}) (*PostListOutput, error) {
 
 func GetPost(_ context.Context, input *PostIDInput) (*PostOutput, error) {
 	var post models.Post
-	if result := database.DB.First(&post, input.ID); result.Error != nil {
-		return nil, huma.Error404NotFound(fmt.Sprintf("post %d not found", input.ID))
+	if result := database.DB.Where("id = ?", input.ID).First(&post); result.Error != nil {
+		return nil, huma.Error404NotFound(fmt.Sprintf("post %s not found", input.ID))
 	}
 	return &PostOutput{Body: post}, nil
 }
@@ -89,8 +89,8 @@ func CreatePost(_ context.Context, input *CreatePostInput) (*PostOutput, error) 
 
 func UpdatePost(_ context.Context, input *UpdatePostInput) (*PostOutput, error) {
 	var post models.Post
-	if result := database.DB.First(&post, input.ID); result.Error != nil {
-		return nil, huma.Error404NotFound(fmt.Sprintf("post %d not found", input.ID))
+	if result := database.DB.Where("id = ?", input.ID).First(&post); result.Error != nil {
+		return nil, huma.Error404NotFound(fmt.Sprintf("post %s not found", input.ID))
 	}
 
 	updates := map[string]interface{}{}
@@ -110,13 +110,13 @@ func UpdatePost(_ context.Context, input *UpdatePostInput) (*PostOutput, error) 
 
 func DeletePost(_ context.Context, input *PostIDInput) (*MessageOutput, error) {
 	var post models.Post
-	if result := database.DB.First(&post, input.ID); result.Error != nil {
-		return nil, huma.Error404NotFound(fmt.Sprintf("post %d not found", input.ID))
+	if result := database.DB.Where("id = ?", input.ID).First(&post); result.Error != nil {
+		return nil, huma.Error404NotFound(fmt.Sprintf("post %s not found", input.ID))
 	}
 	database.DB.Delete(&post)
 
 	out := &MessageOutput{}
-	out.Body.Message = fmt.Sprintf("post %d deleted", input.ID)
+	out.Body.Message = fmt.Sprintf("post %s deleted", input.ID)
 	return out, nil
 }
 

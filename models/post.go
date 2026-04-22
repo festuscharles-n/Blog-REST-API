@@ -1,9 +1,12 @@
 package models
 
-import "time"
+import (
+	"github.com/google/uuid"
+	"time"
+)
 
 type Post struct {
-	ID        uint      `json:"id" gorm:"primaryKey;autoIncrement"`
+	ID        uuid.UUID `json:"id" gorm:"primaryKey;default:gen_random_uuid()"`
 	Title     string    `json:"title" gorm:"not null"`
 	Body      string    `json:"body" gorm:"not null"`
 	Author    string    `json:"author" gorm:"not null"`
